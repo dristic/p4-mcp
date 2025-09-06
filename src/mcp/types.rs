@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "method")]
 pub enum MCPMessage {
     #[serde(rename = "initialize")]
@@ -40,7 +40,7 @@ pub enum MCPResponse {
     },
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InitializeParams {
     #[serde(rename = "protocolVersion")]
     pub protocol_version: String,
@@ -49,22 +49,22 @@ pub struct InitializeParams {
     pub client_info: ClientInfo,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ClientCapabilities {
     pub roots: Option<RootsCapability>,
     pub sampling: Option<SamplingCapability>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct RootsCapability {
     #[serde(rename = "listChanged")]
     pub list_changed: bool,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SamplingCapability {}
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ClientInfo {
     pub name: String,
     pub version: String,
@@ -128,7 +128,7 @@ pub struct Tool {
     pub input_schema: serde_json::Value,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CallToolParams {
     pub name: String,
     pub arguments: serde_json::Value,
