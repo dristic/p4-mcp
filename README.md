@@ -2,6 +2,10 @@
 
 A Model Context Protocol (MCP) server that provides AI assistants like Claude with the ability to interact with Perforce (P4) version control systems.
 
+> **⚠️ Work in Progress**
+> 
+> This project is currently under development and should be considered experimental. While the basic functionality has been implemented and tested, it requires further validation in real-world scenarios. Use with caution in production environments and please report any issues you encounter.
+
 ## Features
 
 This MCP server exposes the following Perforce commands as tools:
