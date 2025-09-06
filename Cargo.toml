@@ -1,0 +1,32 @@
+[package]
+name = "p4-mcp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+uuid = { version = "1.0", features = ["v4"] }
+
+# For MCP protocol implementation
+async-trait = "0.1"
+futures = "0.3"
+
+[dev-dependencies]
+tokio-test = "0.4"
+serde_test = "1.0"
+tempfile = "3.0"
+pretty_assertions = "1.0"
+
+[lib]
+name = "p4_mcp"
+path = "src/lib.rs"
+
+[[bin]]
+name = "p4-mcp"
+path = "src/main.rs"

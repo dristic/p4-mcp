@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "p4-mcp": {
+      "command": "D:\\Workspace\\p4-mcp\\target\\release\\p4-mcp.exe",
+      "args": [],
+      "env": {
+        "P4_MOCK_MODE": "1"
+      }
+    }
+  }
+}
