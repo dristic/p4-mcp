@@ -159,6 +159,24 @@ impl P4Handler {
 
                 Ok(result)
             }
+
+            P4Command::Info => Ok(format!(
+                "Mock P4 Info:\n\
+                     User name: testuser\n\
+                     Client name: test-client\n\
+                     Client host: test-host\n\
+                     Client root: C:\\workspace\\p4\\test-client\n\
+                     Current directory: C:\\workspace\\p4\\test-client\\main\n\
+                     Peer address: ssl:perforce.example.com:1666\n\
+                     Client address: 192.168.1.100\n\
+                     Server address: perforce.example.com:1666\n\
+                     Server root: /opt/perforce/depot\n\
+                     Server date: 2024/01/15 12:30:45 -0800 PST\n\
+                     Server uptime: 15:32:18\n\
+                     Server version: P4D/LINUX26X86_64/2023.1/2553040 (2023/06/15)\n\
+                     ServerID: perforce-server\n\
+                     Case Handling: insensitive"
+            )),
         }
     }
 }

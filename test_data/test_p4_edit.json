@@ -1,0 +1,1 @@
+{"method": "tools/call", "id": "edit-test", "params": {"name": "p4_edit", "arguments": {"files": ["src/main.cpp", "include/header.h"]}}}

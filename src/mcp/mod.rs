@@ -177,6 +177,18 @@ impl MCPServer {
             },
         );
 
+        tools.insert(
+            "p4_info".to_string(),
+            Tool {
+                name: "p4_info".to_string(),
+                description: "Get Perforce client and server information".to_string(),
+                input_schema: serde_json::json!({
+                    "type": "object",
+                    "properties": {}
+                }),
+            },
+        );
+
         Self {
             tools,
             p4_handler: crate::p4::P4Handler::new(),
@@ -361,6 +373,8 @@ impl MCPServer {
                     .execute(P4Command::Changes { max, path })
                     .await
             }
+
+            "p4_info" => self.p4_handler.execute(P4Command::Info).await,
 
             _ => Err(anyhow::anyhow!("Unknown tool: {}", tool_name)),
         }

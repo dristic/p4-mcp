@@ -94,7 +94,7 @@ async fn test_list_tools_endpoint() {
     match response {
         MCPResponse::ListToolsResult { id, result } => {
             assert_eq!(id, "test-2");
-            assert_eq!(result.tools.len(), 8); // We expect 8 P4 tools
+            assert_eq!(result.tools.len(), 9); // We expect 9 P4 tools
 
             let tool_names: Vec<&str> = result.tools.iter().map(|t| t.name.as_str()).collect();
             assert!(tool_names.contains(&"p4_status"));
@@ -105,6 +105,7 @@ async fn test_list_tools_endpoint() {
             assert!(tool_names.contains(&"p4_revert"));
             assert!(tool_names.contains(&"p4_opened"));
             assert!(tool_names.contains(&"p4_changes"));
+            assert!(tool_names.contains(&"p4_info"));
         }
         _ => panic!("Expected ListToolsResult, got: {:?}", response),
     }
@@ -467,6 +468,36 @@ async fn test_p4_changes_tool() {
                 assert!(text.contains("Mock P4 Changes"));
                 assert!(text.contains("max: 5"));
                 assert!(text.contains("for path //depot/main/..."));
+            } else {
+                panic!("Expected text content");
+            }
+        }
+        _ => panic!("Expected CallToolResult, got: {:?}", response),
+    }
+}
+
+#[tokio::test]
+async fn test_p4_info_tool() {
+    setup_mock_mode();
+    let mut server = MCPServer::new();
+
+    let message = create_call_tool_message("test-info-1", "p4_info", json!({}));
+
+    let response = server.handle_message(message).await.unwrap().unwrap();
+
+    match response {
+        MCPResponse::CallToolResult { id, result } => {
+            assert_eq!(id, "test-info-1");
+            assert_eq!(result.content.len(), 1);
+            let content = &result.content[0];
+            if let p4_mcp::mcp::ToolContent::Text { text } = content {
+                assert!(text.contains("Mock P4 Info"));
+                assert!(text.contains("User name: testuser"));
+                assert!(text.contains("Client name: test-client"));
+                assert!(text.contains("Client host: test-host"));
+                assert!(text.contains("Server version:"));
+                assert!(text.contains("Server address: perforce.example.com:1666"));
+                assert!(text.contains("Case Handling: insensitive"));
             } else {
                 panic!("Expected text content");
             }

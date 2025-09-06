@@ -1,0 +1,1 @@
+{"method": "tools/call", "id": "add-test", "params": {"name": "p4_add", "arguments": {"files": ["new_file.cpp", "new_header.h", "readme.txt"]}}}

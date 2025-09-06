@@ -6,6 +6,7 @@ A Model Context Protocol (MCP) server that provides AI assistants like Claude wi
 
 This MCP server exposes the following Perforce commands as tools:
 
+- **p4_info** - Get Perforce client and server information
 - **p4_status** - Get Perforce workspace status
 - **p4_sync** - Sync files from Perforce depot
 - **p4_edit** - Open file(s) for edit in Perforce
@@ -69,6 +70,20 @@ Or run the built binary directly:
 ./target/release/p4-mcp
 ```
 
+### Manual Testing
+
+For manual testing, use the JSON test files in the `test_data/` directory:
+
+```bash
+# Mock mode testing (recommended for development)
+$env:P4_MOCK_MODE=1; Get-Content test_data\test_p4_info.json | .\target\debug\p4-mcp.exe
+
+# Real Perforce testing
+Get-Content test_data\test_p4_info.json | .\target\debug\p4-mcp.exe
+```
+
+See `test_data/README.md` for more testing examples and available test files.
+
 ### Command Line Options
 
 - `--debug` or `-d`: Enable debug logging
@@ -94,6 +109,19 @@ Add the following to your Claude Desktop MCP configuration:
 Replace `path/to/p4-mcp` with the actual path to your compiled binary.
 
 ## Available Tools
+
+### p4_info
+Get Perforce client and server information.
+
+**Parameters:** None
+
+**Example:**
+```json
+{
+  "name": "p4_info",
+  "arguments": {}
+}
+```
 
 ### p4_status
 Get the status of files in your Perforce workspace.
@@ -242,6 +270,8 @@ src/
 └── p4/
     ├── mod.rs        # P4 command handler
     └── commands.rs   # P4 command definitions
+test_data/            # JSON test files for manual testing
+tests/                # Unit and integration tests
 ```
 
 ### Building

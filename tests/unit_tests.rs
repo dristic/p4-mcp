@@ -280,6 +280,11 @@ fn test_p4_command_to_args() {
     let cmd = P4Command::Changes { max: 5, path: None };
     let (_, args) = cmd.to_command_args();
     assert_eq!(args, vec!["changes", "-m", "5"]);
+
+    // Test Info command
+    let cmd = P4Command::Info;
+    let (_, args) = cmd.to_command_args();
+    assert_eq!(args, vec!["info"]);
 }
 
 #[tokio::test]
@@ -324,6 +329,14 @@ async fn test_p4_handler_mock_mode() {
     assert!(result.contains("Mock P4 Edit"));
     assert!(result.contains("test.cpp"));
     assert!(result.contains("1 file(s) opened for edit"));
+
+    // Test Info command
+    let result = handler.execute(P4Command::Info).await.unwrap();
+
+    assert!(result.contains("Mock P4 Info"));
+    assert!(result.contains("User name: testuser"));
+    assert!(result.contains("Client name: test-client"));
+    assert!(result.contains("Server version:"));
 
     // Clean up
     env::remove_var("P4_MOCK_MODE");

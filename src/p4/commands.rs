@@ -27,6 +27,7 @@ pub enum P4Command {
         max: u32,
         path: Option<String>,
     },
+    Info,
 }
 
 impl P4Command {
@@ -91,6 +92,8 @@ impl P4Command {
                 }
                 ("p4".to_string(), args)
             }
+
+            P4Command::Info => ("p4".to_string(), vec!["info".to_string()]),
         }
     }
 }
