@@ -4,40 +4,23 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "method")]
 pub enum MCPMessage {
     #[serde(rename = "initialize")]
-    Initialize {
-        id: String,
-        params: InitializeParams,
-    },
+    Initialize { id: i32, params: InitializeParams },
     #[serde(rename = "tools/list")]
-    ListTools { id: String },
+    ListTools { id: i32 },
     #[serde(rename = "tools/call")]
-    CallTool { id: String, params: CallToolParams },
+    CallTool { id: i32, params: CallToolParams },
     #[serde(rename = "ping")]
-    Ping { id: String },
+    Ping { id: i32 },
 }
 
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 pub enum MCPResponse {
-    InitializeResult {
-        id: String,
-        result: InitializeResult,
-    },
-    ListToolsResult {
-        id: String,
-        result: ListToolsResult,
-    },
-    CallToolResult {
-        id: String,
-        result: CallToolResult,
-    },
-    Pong {
-        id: String,
-    },
-    Error {
-        id: String,
-        error: MCPError,
-    },
+    InitializeResult { id: i32, result: InitializeResult },
+    ListToolsResult { id: i32, result: ListToolsResult },
+    CallToolResult { id: i32, result: CallToolResult },
+    Pong { id: i32 },
+    Error { id: i32, error: MCPError },
 }
 
 #[derive(Debug, Serialize, Deserialize)]

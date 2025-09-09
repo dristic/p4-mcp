@@ -7,7 +7,7 @@ use tracing::{error, info, warn};
 pub mod mcp;
 pub mod p4;
 
-use mcp::{MCPMessage, MCPResponse, MCPServer};
+use mcp::{MCPMessage, MCPServer};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -21,16 +21,15 @@ struct Args {
 async fn main() -> Result<()> {
     let args = Args::parse();
 
-    // Initialize logging
-    let subscriber = tracing_subscriber::fmt()
+    // Initialize logging - direct all logs to stderr for MCP compliance
+    tracing_subscriber::fmt()
+        .with_writer(std::io::stderr)
         .with_max_level(if args.debug {
             tracing::Level::DEBUG
         } else {
             tracing::Level::INFO
         })
-        .finish();
-
-    tracing::subscriber::set_global_default(subscriber)?;
+        .init();
 
     info!("Starting p4-mcp server");
 
@@ -48,15 +47,19 @@ async fn main() -> Result<()> {
 
         for line in reader.lines() {
             match line {
-                Ok(line) => {
-                    if let Ok(message) = serde_json::from_str::<MCPMessage>(&line) {
+                Ok(line) => match serde_json::from_str::<MCPMessage>(&line) {
+                    Ok(message) => {
                         if stdin_tx.send(message).is_err() {
                             break;
                         }
-                    } else {
-                        warn!("Failed to parse message: {}", line);
                     }
-                }
+                    Err(parse_error) => {
+                        warn!(
+                            "Failed to parse JSON message: {} - Input: {}",
+                            parse_error, line
+                        );
+                    }
+                },
                 Err(e) => {
                     error!("Error reading stdin: {}", e);
                     break;

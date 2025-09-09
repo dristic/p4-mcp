@@ -1,8 +1,6 @@
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tracing::{debug, info};
-use uuid::Uuid;
 
 use crate::p4::P4Command;
 

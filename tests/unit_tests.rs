@@ -14,7 +14,7 @@ fn test_mcp_message_deserialization() {
 
     match message {
         MCPMessage::Initialize { id, params } => {
-            assert_eq!(id, "1");
+            assert_eq!(id, 1);
             assert_eq!(params.protocol_version, "2024-11-05");
             assert_eq!(params.client_info.name, "test");
             assert_eq!(params.client_info.version, "1.0");
@@ -31,7 +31,7 @@ fn test_list_tools_message_deserialization() {
 
     match message {
         MCPMessage::ListTools { id } => {
-            assert_eq!(id, "2");
+            assert_eq!(id, 2);
         }
         _ => panic!("Expected ListTools message"),
     }
@@ -45,7 +45,7 @@ fn test_call_tool_message_deserialization() {
 
     match message {
         MCPMessage::CallTool { id, params } => {
-            assert_eq!(id, "3");
+            assert_eq!(id, 3);
             assert_eq!(params.name, "p4_status");
             assert_eq!(params.arguments["path"], "//depot/main/...");
         }
@@ -61,7 +61,7 @@ fn test_ping_message_deserialization() {
 
     match message {
         MCPMessage::Ping { id } => {
-            assert_eq!(id, "ping-1");
+            assert_eq!(id, 1);
         }
         _ => panic!("Expected Ping message"),
     }
@@ -70,7 +70,7 @@ fn test_ping_message_deserialization() {
 #[test]
 fn test_initialize_response_serialization() {
     let response = MCPResponse::InitializeResult {
-        id: "test-1".to_string(),
+        id: 1,
         result: InitializeResult {
             protocol_version: "2024-11-05".to_string(),
             capabilities: ServerCapabilities {
@@ -127,14 +127,14 @@ fn test_list_tools_response_serialization() {
     ];
 
     let response = MCPResponse::ListToolsResult {
-        id: "test-2".to_string(),
+        id: 2,
         result: ListToolsResult { tools },
     };
 
     let json_str = serde_json::to_string(&response).unwrap();
     let parsed: serde_json::Value = serde_json::from_str(&json_str).unwrap();
 
-    assert_eq!(parsed["id"], "test-2");
+    assert_eq!(parsed["id"], 2);
     assert_eq!(parsed["result"]["tools"].as_array().unwrap().len(), 2);
     assert_eq!(parsed["result"]["tools"][0]["name"], "p4_status");
     assert_eq!(parsed["result"]["tools"][1]["name"], "p4_sync");
@@ -143,7 +143,7 @@ fn test_list_tools_response_serialization() {
 #[test]
 fn test_call_tool_response_serialization() {
     let response = MCPResponse::CallToolResult {
-        id: "test-3".to_string(),
+        id: 3,
         result: CallToolResult {
             content: vec![ToolContent::Text {
                 text: "Mock P4 Status result".to_string(),
@@ -154,7 +154,7 @@ fn test_call_tool_response_serialization() {
     let json_str = serde_json::to_string(&response).unwrap();
     let parsed: serde_json::Value = serde_json::from_str(&json_str).unwrap();
 
-    assert_eq!(parsed["id"], "test-3");
+    assert_eq!(parsed["id"], 3);
     assert_eq!(parsed["result"]["content"][0]["type"], "text");
     assert_eq!(
         parsed["result"]["content"][0]["text"],
@@ -165,7 +165,7 @@ fn test_call_tool_response_serialization() {
 #[test]
 fn test_error_response_serialization() {
     let response = MCPResponse::Error {
-        id: "test-error".to_string(),
+        id: 123,
         error: MCPError {
             code: -32602,
             message: "Invalid params".to_string(),
@@ -176,7 +176,7 @@ fn test_error_response_serialization() {
     let json_str = serde_json::to_string(&response).unwrap();
     let parsed: serde_json::Value = serde_json::from_str(&json_str).unwrap();
 
-    assert_eq!(parsed["id"], "test-error");
+    assert_eq!(parsed["id"], 123);
     assert_eq!(parsed["error"]["code"], -32602);
     assert_eq!(parsed["error"]["message"], "Invalid params");
     assert_eq!(
@@ -187,14 +187,12 @@ fn test_error_response_serialization() {
 
 #[test]
 fn test_pong_response_serialization() {
-    let response = MCPResponse::Pong {
-        id: "ping-test".to_string(),
-    };
+    let response = MCPResponse::Pong { id: 456 };
 
     let json_str = serde_json::to_string(&response).unwrap();
     let parsed: serde_json::Value = serde_json::from_str(&json_str).unwrap();
 
-    assert_eq!(parsed["id"], "ping-test");
+    assert_eq!(parsed["id"], 456);
 }
 
 #[test]

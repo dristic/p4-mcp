@@ -12,7 +12,7 @@ fn setup_mock_mode() {
 }
 
 /// Test helper to create a call tool message
-fn create_call_tool_message(id: &str, tool_name: &str, arguments: serde_json::Value) -> MCPMessage {
+fn create_call_tool_message(id: i32, tool_name: &str, arguments: serde_json::Value) -> MCPMessage {
     serde_json::from_value(json!({
         "method": "tools/call",
         "id": id,
@@ -34,7 +34,7 @@ async fn test_high_volume_message_processing() {
 
     for i in 0..message_count {
         let message = create_call_tool_message(
-            &format!("perf-test-{}", i),
+            i,
             "p4_status",
             json!({"path": format!("//depot/test/{}/...", i)}),
         );
@@ -43,7 +43,7 @@ async fn test_high_volume_message_processing() {
 
         match response {
             MCPResponse::CallToolResult { id, .. } => {
-                assert_eq!(id, format!("perf-test-{}", i));
+                assert_eq!(id, i);
             }
             _ => panic!("Expected CallToolResult"),
         }
@@ -80,18 +80,14 @@ async fn test_large_file_lists_performance() {
 
         let start_time = Instant::now();
 
-        let message = create_call_tool_message(
-            &format!("large-files-{}", file_count),
-            "p4_edit",
-            json!({"files": files}),
-        );
+        let message = create_call_tool_message(file_count, "p4_edit", json!({"files": files}));
 
         let response = server.handle_message(message).await.unwrap().unwrap();
         let duration = start_time.elapsed();
 
         match response {
             MCPResponse::CallToolResult { id, result } => {
-                assert_eq!(id, format!("large-files-{}", file_count));
+                assert_eq!(id, file_count);
                 if let ToolContent::Text { text } = &result.content[0] {
                     assert!(text.contains(&format!("{} file(s) opened for edit", file_count)));
                 }
@@ -129,7 +125,7 @@ async fn test_concurrent_message_processing() {
         let handle = tokio::spawn(async move {
             let mut server = MCPServer::new();
             let message = create_call_tool_message(
-                &format!("concurrent-{}", i),
+                i,
                 "p4_status",
                 json!({"path": format!("//depot/concurrent/{}/...", i)}),
             );
@@ -149,13 +145,13 @@ async fn test_concurrent_message_processing() {
 
     let duration = start_time.elapsed();
 
-    assert_eq!(responses.len(), concurrent_requests);
+    assert_eq!(responses.len(), concurrent_requests as usize);
 
     // Verify all responses are correct
     for (i, response) in responses.iter().enumerate() {
         match response {
             MCPResponse::CallToolResult { id, .. } => {
-                assert_eq!(*id, format!("concurrent-{}", i));
+                assert_eq!(*id, i as i32);
             }
             _ => panic!("Expected CallToolResult"),
         }
@@ -182,7 +178,7 @@ async fn test_memory_usage_with_large_responses() {
     // Test that large responses don't cause memory issues
     for i in 0..100 {
         let message = create_call_tool_message(
-            &format!("memory-test-{}", i),
+            i,
             "p4_changes",
             json!({"max": 100, "path": format!("//depot/memory-test/{}/...", i)}),
         );
@@ -191,7 +187,7 @@ async fn test_memory_usage_with_large_responses() {
 
         match response {
             MCPResponse::CallToolResult { id, result } => {
-                assert_eq!(id, format!("memory-test-{}", i));
+                assert_eq!(id, i);
                 if let ToolContent::Text { text } = &result.content[0] {
                     // Verify we get the expected mock response
                     assert!(text.contains("Mock P4 Changes"));
@@ -218,11 +214,8 @@ async fn test_response_time_consistency() {
     for i in 0..iterations {
         let start_time = Instant::now();
 
-        let message = create_call_tool_message(
-            &format!("timing-test-{}", i),
-            "p4_status",
-            json!({"path": "//depot/timing-test/..."}),
-        );
+        let message =
+            create_call_tool_message(i, "p4_status", json!({"path": "//depot/timing-test/..."}));
 
         let _response = server.handle_message(message).await.unwrap().unwrap();
         let duration = start_time.elapsed();
@@ -269,7 +262,7 @@ async fn test_timeout_handling() {
 
     // Test that operations complete well within timeout
     let message = create_call_tool_message(
-        "timeout-test",
+        123,
         "p4_sync",
         json!({"path": "//depot/timeout-test/...", "force": true}),
     );
@@ -281,7 +274,7 @@ async fn test_timeout_handling() {
     let response = result.unwrap().unwrap().unwrap();
     match response {
         MCPResponse::CallToolResult { id, .. } => {
-            assert_eq!(id, "timeout-test");
+            assert_eq!(id, 123);
         }
         _ => panic!("Expected CallToolResult"),
     }
@@ -312,14 +305,13 @@ async fn test_all_tools_performance() {
     let start_time = Instant::now();
 
     for (i, (tool_name, args)) in tools_and_args.iter().enumerate() {
-        let message =
-            create_call_tool_message(&format!("all-tools-{}", i), tool_name, args.clone());
+        let message = create_call_tool_message(i as i32, tool_name, args.clone());
 
         let response = server.handle_message(message).await.unwrap().unwrap();
 
         match response {
             MCPResponse::CallToolResult { id, .. } => {
-                assert_eq!(id, format!("all-tools-{}", i));
+                assert_eq!(id, i as i32);
             }
             _ => panic!("Expected CallToolResult for tool: {}", tool_name),
         }
@@ -406,7 +398,7 @@ async fn test_mixed_workload_performance() {
             MCPResponse::Error { id, .. } => id,
         };
 
-        assert_eq!(response_id, &format!("mixed-{}", i));
+        assert_eq!(*response_id, i as i32);
     }
 
     let duration = start_time.elapsed();
@@ -440,7 +432,7 @@ async fn test_stress_test_rapid_fire() {
 
     for i in 0..rapid_fire_count {
         let message = create_call_tool_message(
-            &format!("rapid-{}", i),
+            i,
             if i % 2 == 0 { "p4_status" } else { "p4_opened" },
             json!({}),
         );
