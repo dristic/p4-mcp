@@ -41,7 +41,13 @@ async fn test_initialize_endpoint() {
     let response = response.unwrap();
     assert!(response.is_some());
 
-    if let Some(MCPResponse::InitializeResult { id, result }) = response {
+    if let Some(MCPResponse::InitializeResult {
+        jsonrpc,
+        id,
+        result,
+    }) = response
+    {
+        assert_eq!(jsonrpc, "2.0");
         assert_eq!(id, 0);
         assert_eq!(result.protocol_version, "2024-11-05");
         assert!(result.capabilities.tools.is_some());

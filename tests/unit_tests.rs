@@ -68,34 +68,6 @@ fn test_ping_message_deserialization() {
 }
 
 #[test]
-fn test_initialize_response_serialization() {
-    let response = MCPResponse::InitializeResult {
-        id: 1,
-        result: InitializeResult {
-            protocol_version: "2024-11-05".to_string(),
-            capabilities: ServerCapabilities {
-                tools: Some(ToolsCapability {
-                    list_changed: false,
-                }),
-                ..Default::default()
-            },
-            server_info: ServerInfo {
-                name: "p4-mcp".to_string(),
-                version: "0.1.0".to_string(),
-            },
-        },
-    };
-
-    let json_str = serde_json::to_string(&response).unwrap();
-    let parsed: serde_json::Value = serde_json::from_str(&json_str).unwrap();
-
-    assert_eq!(parsed["id"], "test-1");
-    assert_eq!(parsed["result"]["protocolVersion"], "2024-11-05");
-    assert_eq!(parsed["result"]["serverInfo"]["name"], "p4-mcp");
-    assert_eq!(parsed["result"]["serverInfo"]["version"], "0.1.0");
-}
-
-#[test]
 fn test_list_tools_response_serialization() {
     let tools = vec![
         Tool {

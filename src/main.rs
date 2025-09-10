@@ -15,6 +15,10 @@ struct Args {
     /// Enable debug logging
     #[arg(short, long)]
     debug: bool,
+
+    /// Disable logging
+    #[arg(short, long)]
+    quiet: bool,
 }
 
 #[tokio::main]
@@ -22,14 +26,16 @@ async fn main() -> Result<()> {
     let args = Args::parse();
 
     // Initialize logging - direct all logs to stderr for MCP compliance
-    tracing_subscriber::fmt()
-        .with_writer(std::io::stderr)
-        .with_max_level(if args.debug {
-            tracing::Level::DEBUG
-        } else {
-            tracing::Level::INFO
-        })
-        .init();
+    if !args.quiet {
+        tracing_subscriber::fmt()
+            .with_writer(std::io::stderr)
+            .with_max_level(if args.debug {
+                tracing::Level::DEBUG
+            } else {
+                tracing::Level::INFO
+            })
+            .init();
+    }
 
     info!("Starting p4-mcp server");
 

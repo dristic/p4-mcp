@@ -1,7 +1,7 @@
 use anyhow::Result;
 use std::process::Stdio;
 use tokio::process::Command;
-use tracing::{debug, warn};
+use tracing::debug;
 
 pub mod commands;
 

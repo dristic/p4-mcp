@@ -204,6 +204,7 @@ impl MCPServer {
                 );
 
                 Ok(Some(MCPResponse::InitializeResult {
+                    jsonrpc: "2.0".to_string(),
                     id,
                     result: InitializeResult {
                         protocol_version: "2024-11-05".to_string(),
@@ -214,7 +215,8 @@ impl MCPServer {
                             ..Default::default()
                         },
                         server_info: ServerInfo {
-                            name: "p4-mcp".to_string(),
+                            name: "P4Server".to_string(),
+                            title: "P4 CLI Server".to_string(),
                             version: "0.1.0".to_string(),
                         },
                     },

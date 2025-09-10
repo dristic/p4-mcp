@@ -16,11 +16,26 @@ pub enum MCPMessage {
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 pub enum MCPResponse {
-    InitializeResult { id: i32, result: InitializeResult },
-    ListToolsResult { id: i32, result: ListToolsResult },
-    CallToolResult { id: i32, result: CallToolResult },
-    Pong { id: i32 },
-    Error { id: i32, error: MCPError },
+    InitializeResult {
+        jsonrpc: String,
+        id: i32,
+        result: InitializeResult,
+    },
+    ListToolsResult {
+        id: i32,
+        result: ListToolsResult,
+    },
+    CallToolResult {
+        id: i32,
+        result: CallToolResult,
+    },
+    Pong {
+        id: i32,
+    },
+    Error {
+        id: i32,
+        error: MCPError,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -62,6 +77,7 @@ pub struct InitializeResult {
     pub server_info: ServerInfo,
 }
 
+#[serde_with::skip_serializing_none]
 #[derive(Debug, Serialize, Default)]
 pub struct ServerCapabilities {
     pub logging: Option<LoggingCapability>,
@@ -95,6 +111,7 @@ pub struct ToolsCapability {
 #[derive(Debug, Serialize)]
 pub struct ServerInfo {
     pub name: String,
+    pub title: String,
     pub version: String,
 }
 
